@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTRA MODS | ELITE ACCESS</title>
+    <title>ULTRA SHOP | MARKETPLACE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -12,150 +12,85 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Poppins:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;900&display=swap');
+        body { font-family: 'Urbanist', sans-serif; background: #080a0f; color: white; }
         
-        :root {
-            --neon-cyan: #00f2ff;
-            --neon-pink: #ff007a;
-            --neon-purple: #8b5cf6;
-            --bg-dark: #05070a;
-        }
-
-        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-dark); color: white; overflow-x: hidden; }
-        .font-orbit { font-family: 'Orbitron', sans-serif; }
-
-        /* Animated Background Blobs */
-        .blob { position: absolute; width: 300px; height: 300px; background: var(--neon-cyan); filter: blur(120px); opacity: 0.1; z-index: -1; animation: move 20s infinite alternate; }
-        @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(100%, 50%); } }
-
-        /* Glassmorphism & Neon */
-        .neon-card { background: rgba(18, 22, 32, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(0, 242, 255, 0.2); border-radius: 24px; transition: 0.3s; }
-        .neon-card:hover { border-color: var(--neon-cyan); box-shadow: 0 0 20px rgba(0, 242, 255, 0.1); }
-        .neon-border-pink { border-color: rgba(255, 0, 122, 0.3); }
+        .sidebar { background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(10px); border-right: 1px solid rgba(0, 242, 255, 0.1); transition: 0.3s; }
+        .product-card { background: #121620; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; transition: 0.3s; }
+        .product-card:hover { border-color: #00f2ff; transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 242, 255, 0.1); }
         
-        .btn-glow-cyan { background: var(--neon-cyan); color: #000; font-weight: 800; box-shadow: 0 0 15px rgba(0, 242, 255, 0.4); }
-        .btn-glow-cyan:active { transform: scale(0.95); }
-
-        /* Sidebar Transition */
-        #sidebar { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 100; }
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 90; }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 10px; }
+        .neon-glow { text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
+        .btn-buy { background: linear-gradient(90deg, #00f2ff, #0072ff); color: black; font-weight: 900; }
+        
+        .hidden-panel { display: none; }
+        #mobile-menu { z-index: 100; }
     </style>
 </head>
-<body>
-    <div class="blob"></div>
-    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+<body class="min-h-screen">
 
-    <section id="auth-page" class="min-h-screen flex items-center justify-center p-6">
-        <div class="w-full max-w-sm text-center">
-            <div class="relative inline-block mb-8">
-                <div class="absolute inset-0 bg-cyan-500 blur-2xl opacity-20"></div>
-                <div class="relative p-6 border-2 border-cyan-500 rounded-3xl rotate-45 bg-black/50">
-                    <i class="fa-solid fa-shield-halved text-4xl text-cyan-400 -rotate-45"></i>
-                </div>
-            </div>
-            <h1 class="text-3xl font-black font-orbit text-cyan-400 tracking-wider">ADMIN PANEL</h1>
-            <p class="text-[10px] tracking-[5px] text-slate-500 mb-10">AUTHORIZE SYSTEM ACCESS</p>
-
-            <div class="space-y-4">
-                <div class="relative">
-                    <i class="fa-solid fa-user absolute left-4 top-4 text-slate-600 text-sm"></i>
-                    <input type="email" id="email" placeholder="USERNAME" class="w-full bg-[#0d1117] border border-slate-800 p-4 pl-12 rounded-2xl focus:border-cyan-500 outline-none text-sm transition-all">
-                </div>
-                <div class="relative">
-                    <i class="fa-solid fa-lock absolute left-4 top-4 text-slate-600 text-sm"></i>
-                    <input type="password" id="pass" placeholder="PASSWORD" class="w-full bg-[#0d1117] border border-slate-800 p-4 pl-12 rounded-2xl focus:border-cyan-500 outline-none text-sm transition-all">
-                </div>
-                
-                <button onclick="handleLogin()" class="w-full btn-glow-cyan py-4 rounded-2xl text-sm font-black mt-4">AUTHENTICATE</button>
-                <p class="text-xs text-slate-500 mt-6">Don't have access? <span class="text-cyan-400 font-bold cursor-pointer underline">Request Key</span></p>
-            </div>
+    <nav class="p-4 border-b border-white/5 flex justify-between items-center sticky top-0 bg-[#080a0f]/80 backdrop-blur-md z-40">
+        <div class="flex items-center gap-3">
+            <button onclick="toggleMenu()" class="text-2xl"><i class="fa-solid fa-bars-staggered text-cyan-400"></i></button>
+            <h1 class="text-xl font-black italic tracking-tighter neon-glow">CORE<span class="text-white">SHOP</span></h1>
         </div>
-    </section>
-
-    <section id="main-panel" class="hidden min-h-screen pb-20">
-        <nav class="p-5 flex justify-between items-center sticky top-0 bg-black/40 backdrop-blur-md z-50">
-            <button onclick="toggleSidebar()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10">
-                <i class="fa-solid fa-bars-staggered text-cyan-400"></i>
-            </button>
-            <div class="flex items-center gap-3">
-                <div class="text-right">
-                    <p id="user-display" class="text-[10px] font-bold text-white uppercase tracking-tighter">Guest User</p>
-                    <p class="text-[8px] text-green-500 font-black">ONLINE</p>
-                </div>
-                <div class="w-10 h-10 rounded-full border-2 border-cyan-500 p-0.5 shadow-lg shadow-cyan-500/20">
-                    <img src="https://ui-avatars.com/api/?background=00f2ff&color=000&bold=true" class="rounded-full">
-                </div>
-            </div>
-        </nav>
-
-        <div id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-[#0d1117] -translate-x-full border-r border-cyan-500/20 p-8 flex flex-col">
-            <div class="mb-12">
-                <h2 class="text-2xl font-black font-orbit text-cyan-400">CORE<span class="text-white">X</span></h2>
-                <p class="text-[8px] tracking-[4px] text-slate-500">MANAGEMENT SUITE</p>
-            </div>
-            <div class="flex-1 space-y-4">
-                <a href="#" class="flex items-center gap-4 p-4 rounded-2xl bg-cyan-500/10 text-cyan-400 font-bold"><i class="fa-solid fa-grid-2"></i> Dashboard</a>
-                <a href="#" class="flex items-center gap-4 p-4 rounded-2xl text-slate-400 hover:bg-white/5 transition"><i class="fa-solid fa-wallet"></i> Wallet</a>
-                <a href="#" class="flex items-center gap-4 p-4 rounded-2xl text-slate-400 hover:bg-white/5 transition"><i class="fa-solid fa-bolt"></i> Active Mods</a>
-                <a href="#" class="flex items-center gap-4 p-4 rounded-2xl text-slate-400 hover:bg-white/5 transition"><i class="fa-solid fa-gear"></i> Settings</a>
-            </div>
-            <button onclick="location.reload()" class="flex items-center gap-4 p-4 text-red-500 font-bold border-t border-white/5"><i class="fa-solid fa-power-off"></i> Terminate Session</button>
+        <div class="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-full border border-white/10">
+            <i class="fa-solid fa-wallet text-cyan-400 text-xs"></i>
+            <span id="nav-balance" class="text-xs font-bold">₹0.00</span>
         </div>
+    </nav>
 
-        <div class="p-6 space-y-6">
-            <div class="neon-card p-8 border-pink-500/40 relative overflow-hidden">
-                <div class="absolute -right-10 -top-10 w-40 h-40 bg-pink-500 blur-[100px] opacity-20"></div>
-                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[3px] mb-2">Available Credits</p>
-                <h1 id="balance-txt" class="text-5xl font-black text-pink-500 font-orbit">₹0.00</h1>
-                <div class="mt-6 flex gap-3">
-                    <button class="bg-pink-600/20 text-pink-500 px-4 py-2 rounded-lg text-[10px] font-bold border border-pink-500/20">+ ADD CASH</button>
-                </div>
-            </div>
-
-            <div class="neon-card p-6 border-purple-500/40 text-center">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xs font-black text-cyan-400 uppercase tracking-widest italic">>> Lucky Draw</h3>
-                    <span class="bg-purple-600 text-white text-[8px] px-2 py-1 rounded">HOT</span>
-                </div>
-                <div class="relative w-48 h-48 mx-auto mb-4 p-2 border-4 border-dashed border-purple-500 rounded-full flex items-center justify-center animate-spin-slow">
-                    <div class="text-center">
-                        <p class="text-2xl font-black text-purple-500 italic">WIN</p>
-                        <p class="text-[10px] text-white">UP TO ₹500</p>
-                    </div>
-                </div>
-                <button class="w-full bg-purple-600 p-4 rounded-2xl font-black text-xs hover:bg-purple-700 transition">SPIN NOW (₹25)</button>
-            </div>
-
-            <h3 class="text-xs font-black text-cyan-400 uppercase tracking-widest mt-10">>> Available Stock</h3>
-            <div class="grid grid-cols-1 gap-4">
-                <div class="neon-card p-5 border-white/10 flex justify-between items-center bg-gradient-to-r from-cyan-500/5 to-transparent">
-                    <div>
-                        <h4 class="font-bold text-sm">BR MOD PC (1 DAY)</h4>
-                        <p class="text-xs text-pink-500 font-black mt-1">₹79.00</p>
-                    </div>
-                    <button class="bg-cyan-500 text-black px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-tighter shadow-lg shadow-cyan-500/20">PURCHASE</button>
-                </div>
-                <div class="neon-card p-5 border-white/10 flex justify-between items-center">
-                    <div>
-                        <h4 class="font-bold text-sm">ELITE BYPASS (30 DAYS)</h4>
-                        <p class="text-xs text-pink-500 font-black mt-1">₹959.00</p>
-                    </div>
-                    <button class="bg-cyan-500 text-black px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-tighter">PURCHASE</button>
-                </div>
-            </div>
+    <div id="sidebar" class="fixed top-0 left-[-300px] w-[280px] h-full sidebar z-50 p-8 flex flex-col">
+        <div class="flex justify-between items-center mb-10">
+            <p class="font-black text-cyan-400 uppercase tracking-widest text-sm">Main Menu</p>
+            <button onclick="toggleMenu()"><i class="fa-solid fa-xmark text-xl"></i></button>
         </div>
-    </section>
-
-    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-cyan-500 text-black px-6 py-3 rounded-full text-xs font-black hidden z-[200] shadow-2xl">
-        SUCCESSFULLY UPDATED!
+        <div class="space-y-4 flex-1">
+            <div class="p-4 rounded-2xl bg-cyan-500/10 text-cyan-400 font-bold border border-cyan-500/20"><i class="fa-solid fa-cart-shopping mr-3"></i> Buy Products</div>
+            <div class="p-4 rounded-2xl hover:bg-white/5 transition"><i class="fa-solid fa-clock-rotate-left mr-3"></i> Order History</div>
+            <div class="p-4 rounded-2xl hover:bg-white/5 transition"><i class="fa-solid fa-plus mr-3"></i> Add Funds</div>
+        </div>
+        <button onclick="logout()" class="p-4 text-red-500 font-bold border-t border-white/5 text-left"><i class="fa-solid fa-power-off mr-3"></i> Sign Out</button>
     </div>
 
+    <main class="p-6">
+        <div class="mb-8">
+            <h2 class="text-2xl font-black mb-2">Available <span class="text-cyan-400 italic">Inventory</span></h2>
+            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[3px]">Select your product below</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div class="product-card p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="bg-cyan-500/10 text-cyan-400 text-[10px] px-3 py-1 rounded-full font-bold">1 DAY ACCESS</span>
+                    <i class="fa-solid fa-microchip text-slate-700 text-xl"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-1">BR MOD PC (LITE)</h3>
+                <p class="text-xs text-slate-500 mb-6">High performance bypass for PC devices. Anti-ban active.</p>
+                <div class="flex justify-between items-center pt-4 border-t border-white/5">
+                    <p class="text-xl font-black text-white">₹79.00</p>
+                    <button onclick="buyProduct('BR MOD PC (LITE)', 79)" class="btn-buy px-6 py-3 rounded-xl text-xs">PURCHASE</button>
+                </div>
+            </div>
+
+            <div class="product-card p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <span class="bg-purple-500/10 text-purple-400 text-[10px] px-3 py-1 rounded-full font-bold">30 DAYS ACCESS</span>
+                    <i class="fa-solid fa-crown text-slate-700 text-xl"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-1">VIP ELITE BUNDLE</h3>
+                <p class="text-xs text-slate-500 mb-6">Full package with all premium mods and 24/7 support.</p>
+                <div class="flex justify-between items-center pt-4 border-t border-white/5">
+                    <p class="text-xl font-black text-white">₹999.00</p>
+                    <button onclick="buyProduct('VIP ELITE BUNDLE', 999)" class="btn-buy px-6 py-3 rounded-xl text-xs">PURCHASE</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
     <script>
-        // --- YOUR FIREBASE CONFIG (Connected) ---
+        // --- YOUR FIREBASE CONFIG ---
         const firebaseConfig = {
           apiKey: "AIzaSyDoZtOO0NeC8WvNT_L21WxyYCQRtry0xsQ",
           authDomain: "panel-8c81c.firebaseapp.com",
@@ -170,56 +105,50 @@
         const auth = firebase.auth();
         const db = firebase.database();
 
-        // UI Logic
-        function toggleSidebar() {
+        let currentBalance = 0;
+
+        // UI Functions
+        function toggleMenu() {
             const side = document.getElementById('sidebar');
-            const over = document.getElementById('overlay');
-            if(side.style.transform === 'translateX(0px)') {
-                side.style.transform = 'translateX(-100%)';
-                over.style.display = 'none';
-            } else {
-                side.style.transform = 'translateX(0px)';
-                over.style.display = 'block';
-            }
+            if(side.style.left === '0px') side.style.left = '-300px';
+            else side.style.left = '0px';
         }
 
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.style.display = 'block';
-            setTimeout(() => t.style.display = 'none', 3000);
-        }
-
-        function handleLogin() {
-            const e = document.getElementById('email').value;
-            const p = document.getElementById('pass').value;
-            if (navigator.vibrate) navigator.vibrate(50); // Haptic feedback
-
-            auth.signInWithEmailAndPassword(e, p)
-                .then(() => showToast("ACCESS GRANTED"))
-                .catch(err => alert(err.message));
-        }
-
-        // Real-time Auth & Data Sync
+        // Real-time Balance Sync
         auth.onAuthStateChanged(user => {
             if(user) {
-                document.getElementById('auth-page').classList.add('hidden');
-                document.getElementById('main-panel').classList.remove('hidden');
-                document.getElementById('user-display').innerText = user.email.split('@')[0];
-
-                // Sync Balance
                 db.ref('users/' + user.uid + '/balance').on('value', snap => {
-                    const bal = snap.val() || 0;
-                    document.getElementById('balance-txt').innerText = "₹" + bal.toFixed(2);
+                    currentBalance = snap.val() || 0;
+                    document.getElementById('nav-balance').innerText = "₹" + currentBalance.toFixed(2);
                 });
+            } else {
+                // If not logged in, redirect to login page (index.html or auth page)
+                console.log("No User Found");
             }
         });
-    </script>
 
-    <style>
-        .animate-spin-slow { animation: spin 8s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .hidden { display: none; }
-    </style>
+        // Purchase Logic
+        function buyProduct(name, price) {
+            if(currentBalance < price) {
+                alert("Insufficient Balance! Please contact admin to add funds.");
+                return;
+            }
+
+            if(confirm(`Do you want to buy ${name} for ₹${price}?`)) {
+                const user = auth.currentUser;
+                const newBalance = currentBalance - price;
+
+                // Update Database
+                db.ref('users/' + user.uid).update({
+                    balance: newBalance
+                }).then(() => {
+                    alert(`Purchase Successful: ${name}\nBalance Deducted: ₹${price}`);
+                    // You can add logic here to give the user their key/link
+                }).catch(err => alert(err.message));
+            }
+        }
+
+        function logout() { auth.signOut().then(() => location.reload()); }
+    </script>
 </body>
 </html>
